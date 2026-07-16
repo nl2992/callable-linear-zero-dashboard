@@ -1,0 +1,12 @@
+# Personal photos — never publish
+*.HEIC
+*.heic
+*.jpg
+*.jpeg
+*.png
+
+# OS junk
+.DS_Store
+
+# Local Claude settings
+.claude/

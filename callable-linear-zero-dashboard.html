@@ -1,0 +1,2735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<style>
+html, body {
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  overflow: auto;
+  background-color: #192231;
+}
+img, svg, canvas, video, iframe {
+  max-width: 100%;
+  height: auto;
+}
+table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.js-plotly-plot,
+.plot-container {
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 400px;
+}
+.modebar-container {
+  position: absolute !important;
+  top: 10px !important;
+  right: 10px !important;
+}
+.modebar {
+  background-color: rgba(25, 34, 49, 0.7) !important;
+  padding: 2px 4px !important;
+  border-radius: 4px !important;
+}
+div, section, article, main, aside, header, footer, nav {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+[style*="height: 100%"], [style*="height:100%"] {
+  height: 100vh !important;
+}
+.container, .main-container, .app-container {
+  min-height: 100vh;
+}
+</style>
+<script>
+window.addEventListener('resize', function() {
+  if (window.Plotly) {
+    var plots = document.querySelectorAll('.js-plotly-plot');
+    plots.forEach(function(plot) {
+      window.Plotly.Plots.resize(plot);
+    });
+  }
+  document.dispatchEvent(new CustomEvent('widgetResize'));
+});
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HSBC Structured Products &bull; Callable Linear Zero</title>
+<link rel="icon" href="/studio/static/ui/hsbc_icon.ico" />
+<style>
+:root {
+  --hsbc-red:#db0011;
+  --hsbc-red-dark:#b1000d;
+  --ink:#171a1f;
+  --ink-2:#344054;
+  --muted:#667085;
+  --muted-2:#98a2b3;
+  --bg:#f4f5f7;
+  --panel:#ffffff;
+  --panel-2:#fbfcfd;
+  --line:#e6e8ec;
+  --line-2:#eef1f4;
+  --ok:#0a7c46;
+  --ok-bg:#eaf7f0;
+  --ok-bd:#c7e8d5;
+  --warn:#9a6400;
+  --warn-bg:#fff5e6;
+  --warn-bd:#efd7ad;
+  --err:#7a1d28;
+  --err-bg:#fff8f8;
+  --err-bd:#f3d3d8;
+  --shadow:0 10px 30px rgba(16,24,40,.08);
+  --shadow-sm:0 1px 2px rgba(16,24,40,.06);
+  --radius:12px;
+  --ui:"Univers Next for HSBC", Arial, sans-serif;
+  --mono:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --rail:#0f1622;
+  --rail-2:#151f30;
+  --rail-line:rgba(255,255,255,.08);
+  --rail-ink:#e7ebf2;
+  --rail-muted:#8a97ad;
+}
+* { box-sizing:border-box; }
+body {
+  font-family:var(--ui);
+  background:var(--bg);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+button,input,textarea,select { font:inherit; }
+.app-shell {
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:248px 1fr;
+}
+.app {
+  min-height:100vh;
+  min-width:0;
+  display:grid;
+  grid-template-rows:auto auto 1fr;
+}
+/* ---- Product rail ---- */
+.sidebar {
+  background:linear-gradient(180deg, var(--rail) 0%, var(--rail-2) 100%);
+  color:var(--rail-ink);
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  padding:20px 16px;
+  position:sticky;
+  top:0;
+  height:100vh;
+  overflow:auto;
+  border-right:1px solid var(--rail-line);
+}
+.brand {
+  display:flex;
+  align-items:center;
+  gap:11px;
+  padding:4px 6px 16px;
+  border-bottom:1px solid var(--rail-line);
+  margin-bottom:8px;
+}
+.brand-mark {
+  position:relative;
+  width:34px;
+  height:34px;
+  flex:0 0 auto;
+  filter:drop-shadow(0 2px 6px rgba(219,0,17,.35));
+}
+.brand-mark .brand-fallback,
+.brand-mark .brand-real {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+}
+/* Real HSBC asset (studio backend) paints over the SVG fallback when it loads;
+   if it 404s outside the studio environment its onerror removes it, revealing the SVG. */
+.brand-mark .brand-real {
+  object-fit:contain;
+  border-radius:6px;
+}
+.brand-name {
+  display:flex;
+  flex-direction:column;
+  line-height:1.2;
+}
+.brand-name b {
+  font-size:13.5px;
+  font-weight:800;
+  letter-spacing:.01em;
+  color:#fff;
+}
+.brand-name span {
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.14em;
+  color:var(--rail-muted);
+  margin-top:2px;
+}
+.rail-label {
+  font-size:9.5px;
+  text-transform:uppercase;
+  letter-spacing:.16em;
+  color:var(--rail-muted);
+  font-weight:800;
+  padding:10px 8px 4px;
+}
+.prod {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  width:100%;
+  text-align:left;
+  padding:10px 11px;
+  border-radius:10px;
+  border:1px solid transparent;
+  background:transparent;
+  color:var(--rail-ink);
+  font-size:12.5px;
+  font-weight:650;
+  cursor:pointer;
+  transition:background-color .15s ease, border-color .15s ease;
+}
+.prod:hover:not(.active):not(.locked) {
+  background:rgba(255,255,255,.05);
+}
+.prod.active {
+  background:linear-gradient(180deg, rgba(219,0,17,.22), rgba(219,0,17,.12));
+  border-color:rgba(219,0,17,.5);
+  box-shadow:inset 3px 0 0 var(--hsbc-red);
+}
+.prod.locked {
+  color:var(--rail-muted);
+  cursor:default;
+}
+.prod .dot {
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  flex:0 0 auto;
+  background:var(--rail-muted);
+}
+.prod.active .dot {
+  background:var(--hsbc-red);
+  box-shadow:0 0 0 3px rgba(219,0,17,.22);
+}
+.prod .label { flex:1 1 auto; min-width:0; }
+.prod .label small {
+  display:block;
+  font-size:10px;
+  font-weight:600;
+  color:var(--rail-muted);
+  margin-top:1px;
+}
+.prod .soon {
+  font-size:8.5px;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  font-weight:800;
+  color:var(--rail-muted);
+  border:1px solid var(--rail-line);
+  border-radius:999px;
+  padding:2px 6px;
+}
+/* ---- Roadmap dropdown ---- */
+.prod-group { margin-bottom:2px; }
+.prod.roadmap { color:var(--rail-muted); }
+.prod.roadmap:hover { background:rgba(255,255,255,.05); color:var(--rail-ink); }
+.prod.roadmap[aria-expanded="true"] {
+  background:rgba(255,255,255,.06);
+  color:var(--rail-ink);
+}
+.prod.roadmap[aria-expanded="true"] .dot { background:#c9a24b; }
+.prod .chev {
+  width:12px;
+  height:12px;
+  flex:0 0 auto;
+  transition:transform .18s ease;
+}
+.prod.roadmap[aria-expanded="true"] .chev { transform:rotate(180deg); }
+.prod-panel {
+  padding:4px 4px 12px 30px;
+  animation:tabIn .18s ease;
+}
+.stage-drop {
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:8px;
+  padding:12px;
+  border:1px dashed var(--rail-line);
+  border-radius:10px;
+  background:rgba(255,255,255,.03);
+}
+.stage-btn {
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:8px 11px;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,.18);
+  background:rgba(255,255,255,.06);
+  color:var(--rail-ink);
+  font-size:11.5px;
+  font-weight:700;
+  cursor:pointer;
+  transition:background-color .15s ease, border-color .15s ease;
+}
+.stage-btn:hover {
+  background:rgba(255,255,255,.11);
+  border-color:rgba(255,255,255,.3);
+}
+.stage-btn svg { width:13px; height:13px; }
+.stage-file {
+  font-size:11px;
+  color:var(--rail-ink);
+  word-break:break-word;
+  width:100%;
+}
+.stage-file .fn {
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-weight:700;
+}
+.stage-file .fn:before {
+  content:"";
+  width:6px;
+  height:6px;
+  border-radius:2px;
+  background:#c9a24b;
+  flex:0 0 auto;
+}
+.stage-note {
+  font-size:10px;
+  line-height:1.55;
+  color:var(--rail-muted);
+}
+.stage-note b { color:#d8b978; font-weight:700; }
+.rail-foot {
+  margin-top:auto;
+  padding:14px 8px 2px;
+  border-top:1px solid var(--rail-line);
+  font-size:10.5px;
+  line-height:1.6;
+  color:var(--rail-muted);
+}
+.rail-foot b { color:#cdd5e2; font-weight:700; }
+.topbar {
+  background:var(--panel);
+  border-bottom:1px solid var(--line);
+  padding:22px 26px 16px;
+  position:relative;
+}
+.topbar:before {
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:-1px;
+  width:4px;
+  background:linear-gradient(180deg, var(--hsbc-red), var(--hsbc-red-dark));
+}
+.topbar h1 {
+  margin:0;
+  font-size:24px;
+  line-height:1.1;
+  font-weight:760;
+  letter-spacing:.02em;
+}
+.eyebrow {
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.15em;
+  font-weight:800;
+  color:var(--hsbc-red);
+  margin-bottom:9px;
+}
+.eyebrow:before {
+  content:"";
+  width:14px;
+  height:2px;
+  border-radius:2px;
+  background:var(--hsbc-red);
+}
+.sub {
+  margin-top:8px;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.6;
+  max-width:1060px;
+}
+.chiprow {
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+  margin-top:15px;
+}
+.chip {
+  display:inline-flex;
+  flex-direction:column;
+  gap:2px;
+  padding:8px 13px;
+  border-radius:11px;
+  background:linear-gradient(180deg,#ffffff,#f7f9fb);
+  border:1px solid #e2e6ec;
+  box-shadow:var(--shadow-sm);
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.07em;
+  font-weight:700;
+  color:var(--muted);
+  transition:border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+}
+.chip:hover {
+  border-color:#d3d9e2;
+  box-shadow:0 4px 12px rgba(16,24,40,.08);
+  transform:translateY(-1px);
+}
+.chip b {
+  font-size:14px;
+  letter-spacing:.01em;
+  text-transform:none;
+  color:var(--ink);
+  font-weight:800;
+}
+.status-strip {
+  padding:10px 24px 14px;
+  background:var(--panel);
+  border-bottom:1px solid var(--line);
+}
+.notice {
+  padding:12px 13px;
+  border-radius:10px;
+  font-size:12px;
+  line-height:1.6;
+  border:1px solid transparent;
+}
+.notice.ok {
+  background:var(--ok-bg);
+  border-color:var(--ok-bd);
+  color:var(--ok);
+}
+.notice.warn {
+  background:var(--warn-bg);
+  border-color:var(--warn-bd);
+  color:var(--warn);
+}
+.notice.err {
+  background:var(--err-bg);
+  border-color:var(--err-bd);
+  color:var(--err);
+}
+.workspace {
+  padding:22px;
+  min-height:0;
+  display:grid;
+  grid-template-rows:auto 1fr;
+  gap:15px;
+}
+.tabbar {
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.tabbar { align-items:center; }
+.tab-btn {
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  min-height:40px;
+  padding:9px 15px 9px 11px;
+  border-radius:10px;
+  border:1px solid #d5d9e1;
+  background:#fff;
+  color:#344054;
+  font-size:12.5px;
+  font-weight:750;
+  cursor:pointer;
+  transition:background-color .15s ease, border-color .15s ease, color .15s ease;
+}
+.tab-btn:hover:not(.active) {
+  background:#f8fafb;
+  border-color:#c8cdd6;
+}
+.tab-btn.active {
+  background:var(--hsbc-red);
+  border-color:var(--hsbc-red);
+  color:#fff;
+}
+.tab-btn .step {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:19px;
+  height:19px;
+  border-radius:50%;
+  background:#eef1f4;
+  color:var(--muted);
+  font-size:10.5px;
+  font-weight:800;
+  transition:background-color .15s ease, color .15s ease;
+}
+.tab-btn.active .step {
+  background:rgba(255,255,255,.26);
+  color:#fff;
+}
+.tab-flow {
+  color:#c3c9d2;
+  font-size:15px;
+  font-weight:700;
+  user-select:none;
+}
+.tab-panels { min-height:0; }
+.tab-panel {
+  display:none;
+  min-height:0;
+}
+.tab-panel.active {
+  display:block;
+  height:100%;
+  animation:tabIn .2s ease;
+}
+@keyframes tabIn {
+  from { opacity:0; transform:translateY(4px); }
+  to { opacity:1; transform:translateY(0); }
+}
+@media (prefers-reduced-motion:reduce) {
+  .tab-panel.active { animation:none; }
+}
+.template-layout,
+.populate-layout {
+  display:grid;
+  grid-template-columns:430px 1fr;
+  gap:18px;
+  min-height:0;
+}
+.col {
+  min-width:0;
+  min-height:0;
+}
+.scroll-col {
+  overflow:auto;
+  min-height:0;
+}
+.preview-col {
+  overflow:auto;
+  min-height:0;
+  background:#262b34;
+  border-radius:12px;
+  padding:18px;
+}
+.card {
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  margin-bottom:16px;
+  transition:box-shadow .18s ease, transform .18s ease;
+}
+.card:hover {
+  box-shadow:0 14px 38px rgba(16,24,40,.11);
+}
+.card-head {
+  padding:14px 16px 14px 18px;
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg,#ffffff,var(--panel-2));
+  position:relative;
+}
+.card-head:before {
+  content:"";
+  position:absolute;
+  left:0;
+  top:12px;
+  bottom:12px;
+  width:3px;
+  border-radius:0 3px 3px 0;
+  background:var(--hsbc-red);
+  opacity:.85;
+}
+.card-head h3 {
+  margin:0;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  font-weight:800;
+}
+.card-head .small {
+  margin-top:4px;
+  font-size:11px;
+  color:var(--muted);
+}
+.card-body {
+  padding:16px;
+}
+.field {
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  margin-bottom:14px;
+}
+.field:last-child { margin-bottom:0; }
+label {
+  font-size:10.5px;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  color:var(--muted);
+  font-weight:750;
+}
+.grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px 16px;
+}
+.wide { grid-column:1 / -1; }
+.ctrl {
+  width:100%;
+  border:1px solid #d6dbe3;
+  border-radius:9px;
+  padding:10px 11px;
+  font-size:13px;
+  background:#fff;
+  color:var(--ink);
+  outline:none;
+}
+.ctrl:focus {
+  border-color:var(--hsbc-red);
+  box-shadow:0 0 0 3px rgba(219,0,17,.12);
+}
+textarea.ctrl {
+  min-height:88px;
+  resize:vertical;
+}
+.actions {
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.btn {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:38px;
+  padding:9px 12px;
+  border-radius:8px;
+  border:1px solid #d5d9e1;
+  background:#fff;
+  color:#344054;
+  font-size:12.5px;
+  font-weight:700;
+  cursor:pointer;
+  transition:background-color .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+.btn:hover {
+  background:#f8fafb;
+  border-color:#c8cdd6;
+}
+.btn:active {
+  background:#f0f2f5;
+}
+.btn:focus-visible {
+  outline:none;
+  box-shadow:0 0 0 3px rgba(52,64,84,.18);
+}
+.btn.primary {
+  background:linear-gradient(180deg,#e30414,var(--hsbc-red));
+  border-color:var(--hsbc-red-dark);
+  color:#fff;
+  box-shadow:0 2px 8px rgba(219,0,17,.28);
+}
+.btn.primary:hover {
+  background:linear-gradient(180deg,var(--hsbc-red),var(--hsbc-red-dark));
+  border-color:var(--hsbc-red-dark);
+}
+.btn.primary:focus-visible {
+  box-shadow:0 0 0 3px rgba(219,0,17,.22);
+}
+.btn.sm {
+  min-height:30px;
+  padding:6px 9px;
+  font-size:11.5px;
+}
+.meta-grid {
+  display:grid;
+  gap:10px;
+}
+.meta-box {
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:12px 13px;
+  background:#fff;
+}
+.meta-box .k {
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--muted);
+  font-weight:800;
+  margin-bottom:6px;
+}
+.meta-box .v {
+  font-size:13px;
+  line-height:1.5;
+  color:var(--ink);
+  word-break:break-word;
+}
+.table-wrap {
+  width:100%;
+  overflow:auto;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#fff;
+}
+.table-wrap table {
+  width:100%;
+  border-collapse:collapse;
+  min-width:920px;
+  font-size:12px;
+}
+th {
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  color:var(--muted);
+  background:#f8fafb;
+  border-bottom:1px solid var(--line);
+  padding:10px;
+  position:sticky;
+  top:0;
+  z-index:1;
+  text-align:left;
+}
+td {
+  padding:10px;
+  border-bottom:1px solid #f0f2f5;
+  vertical-align:top;
+}
+tr:last-child td { border-bottom:none; }
+.table-wrap tbody tr:hover td { background:#fafbfc; }
+tr.current td { background:#fff8f8; }
+tr.current:hover td { background:#fff4f4; }
+.tag {
+  display:inline-flex;
+  align-items:center;
+  padding:4px 8px;
+  border-radius:999px;
+  font-size:10.5px;
+  font-weight:750;
+  border:1px solid transparent;
+  white-space:nowrap;
+}
+.tag.ok { color:var(--ok); background:var(--ok-bg); border-color:var(--ok-bd); }
+.tag.warn { color:var(--warn); background:var(--warn-bg); border-color:var(--warn-bd); }
+.mono { font-family:var(--mono); }
+.empty { color:#98a2b3; font-style:italic; }
+.help {
+  font-size:11px;
+  color:var(--muted);
+  line-height:1.55;
+}
+.preview-cap {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  color:#d5dae3;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  margin-bottom:12px;
+  flex-wrap:wrap;
+}
+.paper {
+  max-width:1080px;
+  margin:0 auto;
+  background:#fff;
+  border-radius:10px;
+  overflow:hidden;
+  box-shadow:0 18px 44px rgba(0,0,0,.22);
+}
+.paper-head {
+  padding:18px 22px;
+  border-bottom:1px solid #eceff3;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  background:#fcfcfd;
+  flex-wrap:wrap;
+}
+.paper-head .lhs {
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+.paper-head .kicker {
+  font-size:10px;
+  color:var(--hsbc-red);
+  font-weight:800;
+}
+.paper-head .title {
+  font-size:18px;
+  font-weight:760;
+  color:var(--ink);
+  line-height:1.15;
+}
+.paper-head .sub {
+  font-size:12px;
+  color:var(--muted);
+  margin-top:0;
+}
+.badge {
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:7px 10px;
+  border-radius:999px;
+  font-size:11.5px;
+  font-weight:700;
+  border:1px solid transparent;
+}
+.badge.ok { color:var(--ok); background:var(--ok-bg); border-color:var(--ok-bd); }
+.badge.warn { color:var(--warn); background:var(--warn-bg); border-color:var(--warn-bd); }
+.badge.err { color:var(--err); background:var(--err-bg); border-color:var(--err-bd); }
+.live-dot {
+  display:inline-block;
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:currentColor;
+  animation:livePulse 1.1s ease-in-out infinite;
+}
+@keyframes livePulse {
+  0%, 100% { opacity:.35; transform:scale(.8); }
+  50% { opacity:1; transform:scale(1); }
+}
+@media (prefers-reduced-motion:reduce) {
+  .live-dot { animation:none; }
+}
+.paper-body {
+  padding:20px 22px 24px;
+}
+.summary-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px 18px;
+  margin-bottom:18px;
+}
+.summary-box {
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:12px 13px;
+  background:#fff;
+}
+.summary-box h4 {
+  margin:0 0 8px;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--muted);
+}
+.summary-row {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  padding:7px 0;
+  border-bottom:1px dotted #e8ebef;
+  font-size:12.5px;
+}
+.summary-row:last-child { border-bottom:none; }
+.summary-row span:first-child { color:var(--muted); }
+.summary-row strong { text-align:right; color:var(--ink); }
+.template-wrap {
+  border:1px solid var(--line);
+  border-radius:8px;
+  overflow:hidden;
+  background:#fff;
+}
+.template-head {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 12px;
+  border-bottom:1px solid var(--line);
+  background:#fbfcfd;
+  font-size:11px;
+  color:var(--muted);
+}
+.preview-host {
+  min-height:760px;
+  background:#fff;
+  padding:22px 24px 28px;
+  line-height:1.65;
+  overflow:auto;
+}
+.preview-host h1,
+.preview-host h2,
+.preview-host h3,
+.preview-host h4,
+.preview-host h5,
+.preview-host h6 {
+  color:#111827;
+  line-height:1.25;
+  margin-top:1.15em;
+  margin-bottom:.45em;
+}
+.preview-host p {
+  margin:.55em 0;
+  color:#1f2937;
+}
+.preview-host table {
+  border-collapse:collapse;
+  width:100%;
+  margin:12px 0;
+  table-layout:fixed;
+}
+.preview-host td,
+.preview-host th {
+  border:1px solid #d9dde5;
+  padding:7px 8px;
+  vertical-align:top;
+  word-break:break-word;
+}
+.preview-host img {
+  max-width:100%;
+  height:auto;
+  display:block;
+}
+.preview-host ul,
+.preview-host ol {
+  padding-left:22px;
+}
+.preview-host * { max-width:100%; }
+.inline-banner {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  padding:10px 12px;
+  border:1px solid #f3d3d8;
+  background:#fff8f8;
+  border-radius:8px;
+  margin-bottom:14px;
+}
+.inline-banner .label {
+  font-size:10px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--hsbc-red);
+}
+.inline-banner .hint {
+  font-size:11px;
+  color:var(--muted);
+}
+.inline-edit {
+  display:inline-block;
+  min-width:40px;
+  padding:1px 4px;
+  border-bottom:2px solid var(--hsbc-red);
+  background:#fff7f8;
+  color:#7a0010;
+  font-weight:700;
+  outline:none;
+  border-radius:2px;
+}
+.inline-edit:empty:before {
+  content:attr(data-placeholder);
+  color:#98a2b3;
+  font-weight:500;
+}
+.toast {
+  position:fixed;
+  left:50%;
+  bottom:22px;
+  transform:translateX(-50%) translateY(8px);
+  background:#111827;
+  color:#fff;
+  padding:11px 16px;
+  border-radius:10px;
+  font-size:12.5px;
+  box-shadow:0 14px 34px rgba(0,0,0,.28);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .18s ease, transform .32s cubic-bezier(.34,1.56,.64,1);
+  z-index:100;
+  max-width:min(680px,92vw);
+}
+.toast.show {
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+@media (max-width:1200px) {
+  .template-layout,
+  .populate-layout { grid-template-columns:1fr; }
+  .preview-col { padding:0; background:transparent; }
+  .summary-grid { grid-template-columns:1fr; }
+}
+@media (max-width:920px) {
+  .app-shell { grid-template-columns:1fr; }
+  .sidebar {
+    position:static;
+    height:auto;
+    flex-direction:row;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:10px;
+    padding:12px 16px;
+    border-right:none;
+    border-bottom:1px solid var(--rail-line);
+  }
+  .brand { border-bottom:none; margin:0; padding:0; }
+  .rail-label { display:none; }
+  .prod {
+    width:auto;
+    padding:8px 12px;
+  }
+  .prod .label small, .rail-foot { display:none; }
+}
+</style>
+</head>
+<body>
+<div id="ready-marker" style="display:none" data-status="loading">loading</div>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg class="brand-fallback" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 2 L36 11 V29 L20 38 L4 29 V11 Z" fill="#db0011"/>
+          <path d="M20 2 L36 11 V29 L20 38 L4 29 V11 Z" stroke="rgba(255,255,255,.28)" stroke-width="1.1"/>
+          <path d="M20 11 L28 20 L20 29 L12 20 Z" fill="#fff"/>
+        </svg>
+        <img class="brand-real" src="/studio/static/ui/hsbc_icon.ico" alt="" onerror="this.remove()" />
+      </span>
+      <span class="brand-name">
+        <b>HSBC</b>
+        <span>Structured Products</span>
+      </span>
+    </div>
+    <div class="rail-label">Products</div>
+    <button class="prod active" type="button" aria-current="page">
+      <span class="dot"></span>
+      <span class="label">Callable Linear Zero<small>Term-sheet automation</small></span>
+    </button>
+    <div class="rail-label">On the roadmap</div>
+    <div id="roadmapList">
+      <div class="prod-group" data-product="Fixed Coupon Note">
+        <button class="prod roadmap" type="button" aria-expanded="false">
+          <span class="dot"></span>
+          <span class="label">Fixed Coupon Note</span>
+          <svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5 L6 7.5 L9 4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="prod-panel" hidden></div>
+      </div>
+      <div class="prod-group" data-product="Autocallable">
+        <button class="prod roadmap" type="button" aria-expanded="false">
+          <span class="dot"></span>
+          <span class="label">Autocallable</span>
+          <svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5 L6 7.5 L9 4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="prod-panel" hidden></div>
+      </div>
+      <div class="prod-group" data-product="Range Accrual">
+        <button class="prod roadmap" type="button" aria-expanded="false">
+          <span class="dot"></span>
+          <span class="label">Range Accrual</span>
+          <svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5 L6 7.5 L9 4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="prod-panel" hidden></div>
+      </div>
+    </div>
+    <div class="rail-foot">
+      Each product keeps <b>one active template</b>, fully versioned in the backend. New product
+      lines slot in here as they come online.
+    </div>
+  </aside>
+  <div class="app">
+  <header class="topbar">
+    <div class="eyebrow">Callable Linear Zero</div>
+    <h1>Template + Populate workspace</h1>
+    <div class="sub">
+      One template, versioned on the left. Populate it from parameters on the right, or
+      click straight into the highlighted values in the rendered document to edit them inline.
+    </div>
+    <div class="chiprow">
+      <span class="chip">Repository <b id="repoNameChip">Callable Linear Zero</b></span>
+      <span class="chip"><b id="versionCountChip">0</b> versions</span>
+      <span class="chip">Active version <b id="activeVersionChip">None</b></span>
+      <span class="chip">Duplicate repos found <b id="duplicateCountChip">0</b></span>
+    </div>
+  </header>
+  <div class="status-strip">
+    <div id="statusBox" class="notice ok">Initialising...</div>
+  </div>
+  <main class="workspace">
+    <div class="tabbar">
+      <button id="tabTemplate" class="tab-btn active" type="button" data-tab="template"><span class="step">1</span>Template</button>
+      <span class="tab-flow" aria-hidden="true">&rarr;</span>
+      <button id="tabPopulate" class="tab-btn" type="button" data-tab="populate"><span class="step">2</span>Populate</button>
+    </div>
+    <div class="tab-panels">
+      <section id="panelTemplate" class="tab-panel active">
+        <div class="template-layout">
+          <div class="col scroll-col">
+            <div class="card">
+              <div class="card-head">
+                <h3>Repository rule</h3>
+                <div class="small">Use one active backend template consistently</div>
+              </div>
+              <div class="card-body">
+                <div class="notice ok" style="margin-bottom:12px;">
+                  This is the template every populate run uses - until a new version replaces it.
+                </div>
+                <div class="notice warn">
+                  Upload again only when the template itself changes. If the uploaded DOCX is
+                  identical to the current active template, no new version is created.
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-head">
+                <h3>Upload changed template</h3>
+                <div class="small">New upload = new active version, only if different</div>
+              </div>
+              <div class="card-body">
+                <input id="templateInput" type="file" accept=".docx" style="display:none" />
+                <div class="field">
+                  <label>Change note</label>
+                  <textarea id="templateNotes" class="ctrl" placeholder="Optional note, e.g. wording change / formatting update / updated token structure"></textarea>
+                </div>
+                <div class="actions">
+                  <button id="uploadBtn" class="btn primary" type="button">Upload new version</button>
+                  <button id="refreshBtn" class="btn" type="button">Refresh history</button>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-head">
+                <h3>Current backend state</h3>
+                <div class="small">Always pointed at the latest Callable Linear Zero repository record</div>
+              </div>
+              <div class="card-body">
+                <div id="repoMeta" class="meta-grid"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col scroll-col">
+            <div class="card">
+              <div class="card-head">
+                <h3>Template version history</h3>
+                <div class="small">Roll back to, or download, any past version</div>
+              </div>
+              <div class="card-body" id="historyWrap"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section id="panelPopulate" class="tab-panel">
+        <div class="populate-layout">
+          <div class="col scroll-col">
+            <div class="card">
+              <div class="card-head">
+                <h3>Active template</h3>
+                <div class="small">Selected automatically - no manual step needed</div>
+              </div>
+              <div class="card-body">
+                <div id="activeTemplateMeta" class="meta-grid"></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-head">
+                <h3>Parameters</h3>
+                <div class="small">Edit here or click directly on the highlighted values in the preview</div>
+              </div>
+              <div class="card-body">
+                <div class="grid" id="inputGrid"></div>
+                <div style="height:12px;"></div>
+                <div class="actions">
+                  <button id="reloadActiveBtn" class="btn" type="button">Reload active template</button>
+                  <button id="downloadDocxBtn" class="btn primary" type="button">Download populated DOCX</button>
+                  <button id="exportPdfBtn" class="btn" type="button">Export PDF</button>
+                  <button id="resetBtn" class="btn" type="button">Reset values</button>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-head">
+                <h3>Derived values</h3>
+                <div class="small">Calculated from Issue Date, Tenor and LAR</div>
+              </div>
+              <div class="card-body" id="derivedWrap"></div>
+            </div>
+          </div>
+          <div class="col preview-col">
+            <div class="preview-cap">
+              <span><b>Live populated preview</b></span>
+              <span id="previewState">Waiting for active template</span>
+            </div>
+            <div class="paper">
+              <div class="paper-head">
+                <div class="lhs">
+                  <span class="kicker">Preserved Word template</span>
+                  <span class="title">Callable Linear Zero preview</span>
+                  <span class="sub" id="previewSub">Waiting on an active template to populate.</span>
+                </div>
+                <div id="previewBadge" class="badge warn">No template</div>
+              </div>
+              <div class="paper-body">
+                <div id="summaryGrid" class="summary-grid"></div>
+                <div class="template-wrap">
+                  <div class="template-head">
+                    <span id="templateHeadText">No template loaded</span>
+                    <span id="templateHeadMeta">Populate preview</span>
+                  </div>
+                  <div id="previewHost" class="preview-host"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+<script src="https://unpkg.com/pizzip@latest/dist/pizzip.js"></script>
+<script src="https://unpkg.com/docxtemplater@latest/build/docxtemplater.js"></script>
+<script src="https://unpkg.com/jszip@latest/dist/jszip.min.js"></script>
+<script src="https://unpkg.com/mammoth@latest/mammoth.browser.min.js"></script>
+<script src="https://unpkg.com/html2pdf.js@latest/dist/html2pdf.bundle.min.js"></script>
+<script>
+(function() {
+const DB_SQL_URL = '/studio/api/database/workspace/sql';
+const TABLE_ASSET = 'sp_asset_registry';
+const TABLE_VERSION = 'sp_template_versions';
+const TARGET_ASSET_NAME = 'Callable Linear Zero';
+const PREVIEW_MARKERS = {
+  isin: 'HSBC_PREVIEW_EDIT_ISIN_9812',
+  notional: 'HSBC_PREVIEW_EDIT_NOTIONAL_9812',
+  tradeDate: 'HSBC_PREVIEW_EDIT_TRADEDATE_9812',
+  issueDate: 'HSBC_PREVIEW_EDIT_ISSUEDATE_9812',
+  tenor: 'HSBC_PREVIEW_EDIT_TENOR_9812',
+  lar: 'HSBC_PREVIEW_EDIT_LAR_9812'
+};
+const fields = [
+  { key:'isin', label:'ISIN', type:'text', required:false, placeholder:'Optional ISIN', wide:true },
+  { key:'notional', label:'Notional', type:'text', required:true, placeholder:'e.g. 28,000,000' },
+  { key:'tradeDate', label:'Trade Date', type:'date', required:true },
+  { key:'issueDate', label:'Issue Date', type:'date', required:true },
+  { key:'tenor', label:'Tenor', type:'text', required:true, placeholder:'e.g. 5 or 7Y' },
+  { key:'lar', label:'LAR', type:'text', required:true, placeholder:'e.g. 4.10' },
+  { key:'currency', label:'Currency', type:'text', required:false, readonly:true, default:'USD' },
+  { key:'businessDayConvention', label:'Business Day Convention', type:'text', required:false, readonly:true, default:'Following' }
+];
+const defaultValues = {
+  isin:'',
+  notional:'',
+  tradeDate:'',
+  issueDate:'',
+  tenor:'',
+  lar:'',
+  currency:'USD',
+  businessDayConvention:'Following'
+};
+const state = {
+  assetId:'',
+  assetName:TARGET_ASSET_NAME,
+  assetRows:[],
+  assetMeta:null,
+  versions:[],
+  currentTemplateRow:null,
+  currentTemplateFile:null,
+  values:Object.assign({}, defaultValues)
+};
+const el = {
+  ready:document.getElementById('ready-marker'),
+  statusBox:document.getElementById('statusBox'),
+  repoNameChip:document.getElementById('repoNameChip'),
+  versionCountChip:document.getElementById('versionCountChip'),
+  activeVersionChip:document.getElementById('activeVersionChip'),
+  duplicateCountChip:document.getElementById('duplicateCountChip'),
+  templateInput:document.getElementById('templateInput'),
+  templateNotes:document.getElementById('templateNotes'),
+  uploadBtn:document.getElementById('uploadBtn'),
+  refreshBtn:document.getElementById('refreshBtn'),
+  repoMeta:document.getElementById('repoMeta'),
+  historyWrap:document.getElementById('historyWrap'),
+  activeTemplateMeta:document.getElementById('activeTemplateMeta'),
+  inputGrid:document.getElementById('inputGrid'),
+  derivedWrap:document.getElementById('derivedWrap'),
+  reloadActiveBtn:document.getElementById('reloadActiveBtn'),
+  downloadDocxBtn:document.getElementById('downloadDocxBtn'),
+  exportPdfBtn:document.getElementById('exportPdfBtn'),
+  resetBtn:document.getElementById('resetBtn'),
+  previewHost:document.getElementById('previewHost'),
+  previewState:document.getElementById('previewState'),
+  previewSub:document.getElementById('previewSub'),
+  previewBadge:document.getElementById('previewBadge'),
+  templateHeadText:document.getElementById('templateHeadText'),
+  templateHeadMeta:document.getElementById('templateHeadMeta'),
+  summaryGrid:document.getElementById('summaryGrid'),
+  tabTemplate:document.getElementById('tabTemplate'),
+  tabPopulate:document.getElementById('tabPopulate'),
+  panelTemplate:document.getElementById('panelTemplate'),
+  panelPopulate:document.getElementById('panelPopulate'),
+  toast:document.getElementById('toast')
+};
+let renderTimer = null;
+let renderSeq = 0;
+
+function notify(msg) {
+  el.toast.textContent = msg;
+  el.toast.classList.add('show');
+  clearTimeout(notify._timer);
+  notify._timer = setTimeout(() => el.toast.classList.remove('show'), 3200);
+}
+function setReady(flag) {
+  el.ready.dataset.status = flag ? 'ready' : 'loading';
+  el.ready.textContent = flag ? 'ready' : 'loading';
+  window._BOARD_READY = !!flag;
+}
+function setStatus(msg, type) {
+  el.statusBox.className = 'notice ' + (type || 'ok');
+  el.statusBox.innerHTML = msg;
+}
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+function sqlQuote(v) {
+  return "'" + String(v == null ? '' : v).replace(/'/g, "''") + "'";
+}
+function uuidLike(prefix) {
+  if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  return (prefix || 'id') + '_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+}
+function normalizeBool(v) {
+  return v === true || v === 'true' || v === 't' || v === 1 || v === '1';
+}
+function fmtDateTime(v) {
+  if (!v) return '';
+  const d = new Date(v);
+  if (Number.isNaN(d.getTime())) return String(v);
+  return d.toLocaleString('en-GB', {
+    year:'numeric',
+    month:'short',
+    day:'2-digit',
+    hour:'2-digit',
+    minute:'2-digit',
+    second:'2-digit',
+    hour12:false
+  });
+}
+function fmtIsoDate(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return y + '-' + m + '-' + d;
+}
+function fmtWordDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso + 'T00:00:00');
+  if (Number.isNaN(d.getTime())) return '';
+  const day = String(d.getDate()).padStart(2, '0');
+  const mon = d.toLocaleString('en-GB', { month:'short' });
+  const yr = d.getFullYear();
+  return day + ' ' + mon + ' ' + yr;
+}
+function parseNumber(v) {
+  const cleaned = String(v == null ? '' : v).replace(/,/g, '').replace(/%/g, '').trim();
+  if (!cleaned) return null;
+  const n = Number(cleaned);
+  return Number.isFinite(n) ? n : null;
+}
+function fmtNum(n, dp) {
+  if (n == null || !Number.isFinite(Number(n))) return '';
+  return Number(n).toLocaleString('en-US', {
+    minimumFractionDigits:dp,
+    maximumFractionDigits:dp
+  });
+}
+function fmtPct(n, dp) {
+  if (n == null || !Number.isFinite(Number(n))) return '';
+  return fmtNum(Number(n), dp) + '%';
+}
+function parseTenorYears(v) {
+  const cleaned = String(v == null ? '' : v).trim().toLowerCase();
+  if (!cleaned) return null;
+  const m = cleaned.match(/(\d+(?:\.\d+)?)/);
+  if (!m) return null;
+  const n = Number(m[1]);
+  return Number.isFinite(n) ? n : null;
+}
+function getIntegerTenorYears(v) {
+  const n = parseTenorYears(v);
+  if (n == null) return null;
+  return Math.max(0, Math.floor(Number(n)));
+}
+function addYearsFollowing(iso, years) {
+  if (!iso || years == null) return '';
+  const d = new Date(iso + 'T00:00:00');
+  if (Number.isNaN(d.getTime())) return '';
+  d.setFullYear(d.getFullYear() + Number(years));
+  const wd = d.getDay();
+  if (wd === 6) d.setDate(d.getDate() + 2);
+  if (wd === 0) d.setDate(d.getDate() + 1);
+  return fmtIsoDate(d);
+}
+function parseHumanDate(input) {
+  const s = String(input || '').trim();
+  if (!s) return '';
+  const d0 = new Date(s + 'T00:00:00');
+  if (!Number.isNaN(d0.getTime())) return s;
+  const slash = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (slash) {
+    const dd = Number(slash[1]);
+    const mm = Number(slash[2]);
+    const yy = Number(slash[3]);
+    const d = new Date(yy, mm - 1, dd);
+    if (d.getFullYear() === yy && d.getMonth() === mm - 1 && d.getDate() === dd) {
+      return fmtIsoDate(d);
+    }
+  }
+  const word = s.match(/^(\d{1,2})\s+([A-Za-z]{3,9})\s+(\d{4})$/);
+  if (word) {
+    const dd = Number(word[1]);
+    const monText = word[2].toLowerCase();
+    const yy = Number(word[3]);
+    const months = {
+      jan:0,january:0,feb:1,february:1,mar:2,march:2,apr:3,april:3,may:4,jun:5,june:5,
+      jul:6,july:6,aug:7,august:7,sep:8,september:8,oct:9,october:9,nov:10,november:10,
+      dec:11,december:11
+    };
+    const mm = months[monText];
+    const d = new Date(yy, mm, dd);
+    if (d.getFullYear() === yy && d.getMonth() === mm && d.getDate() === dd) {
+      return fmtIsoDate(d);
+    }
+  }
+  return null;
+}
+function getDraftKey() {
+  return 'hsbc_callable_linear_zero_populate_' + (state.assetId || 'default');
+}
+function saveDraft() {
+  try {
+    localStorage.setItem(getDraftKey(), JSON.stringify(state.values));
+  } catch (e) {}
+}
+function loadDraft() {
+  try {
+    const raw = localStorage.getItem(getDraftKey());
+    if (raw) return Object.assign({}, defaultValues, JSON.parse(raw));
+  } catch (e) {}
+  return Object.assign({}, defaultValues);
+}
+async function runSql(sql) {
+  const res = await fetch(DB_SQL_URL, {
+    method:'POST',
+    credentials:'include',
+    headers:{ 'Content-Type':'application/json' },
+    body:JSON.stringify({ sql })
+  });
+  const text = await res.text();
+  let data = null;
+  try { data = JSON.parse(text); } catch (e) {}
+  if (!res.ok) {
+    throw new Error((data && (data.msg || data.error)) || text || ('Database request failed (' + res.status + ')'));
+  }
+  if (data && data.error) {
+    throw new Error(typeof data.error === 'string' ? data.error : JSON.stringify(data.error));
+  }
+  if (data && data.msg && String(data.msg).includes('Unsupported SQL kind')) {
+    throw new Error(String(data.msg));
+  }
+  return data || {};
+}
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = function() {
+      const result = String(reader.result || '');
+      const idx = result.indexOf(',');
+      resolve(idx >= 0 ? result.slice(idx + 1) : result);
+    };
+    reader.onerror = () => reject(reader.error || new Error('File read failed'));
+    reader.readAsDataURL(file);
+  });
+}
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = function() {
+      const result = String(reader.result || '');
+      const idx = result.indexOf(',');
+      resolve(idx >= 0 ? result.slice(idx + 1) : result);
+    };
+    reader.onerror = () => reject(reader.error || new Error('Blob read failed'));
+    reader.readAsDataURL(blob);
+  });
+}
+function base64ToBlob(base64, mime) {
+  const bin = atob(base64);
+  const len = bin.length;
+  const arr = new Uint8Array(len);
+  for (let i = 0; i < len; i++) arr[i] = bin.charCodeAt(i);
+  return new Blob([arr], { type:mime || 'application/octet-stream' });
+}
+function base64ToFile(base64, name, mime) {
+  const blob = base64ToBlob(base64, mime);
+  try {
+    return new File([blob], name || 'template.docx', {
+      type:mime || 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    });
+  } catch (e) {
+    blob.name = name || 'template.docx';
+    return blob;
+  }
+}
+function getDocxtemplaterCtor() {
+  return window.docxtemplater || window.Docxtemplater || null;
+}
+async function bindExistingRepository() {
+  const res = await runSql(`
+SELECT
+  a.asset_id,
+  a.asset_name,
+  a.created_at,
+  a.updated_at,
+  a.last_selected_at,
+  COUNT(v.version_id) AS version_count,
+  COALESCE(MAX(v.created_at), a.last_selected_at, a.updated_at, a.created_at) AS sort_ts
+FROM ${TABLE_ASSET} a
+LEFT JOIN ${TABLE_VERSION} v ON v.asset_id = a.asset_id
+WHERE LOWER(a.asset_name) = LOWER(${sqlQuote(TARGET_ASSET_NAME)})
+GROUP BY a.asset_id, a.asset_name, a.created_at, a.updated_at, a.last_selected_at
+ORDER BY
+  CASE WHEN COUNT(v.version_id) > 0 THEN 0 ELSE 1 END,
+  COALESCE(MAX(v.created_at), a.last_selected_at, a.updated_at, a.created_at) DESC
+`);
+  const rows = Array.isArray(res.rows) ? res.rows : [];
+  state.assetRows = rows;
+  if (rows.length) {
+    state.assetId = rows[0].asset_id;
+    state.assetName = rows[0].asset_name || TARGET_ASSET_NAME;
+    state.assetMeta = rows[0];
+    await runSql(`
+UPDATE ${TABLE_ASSET}
+SET updated_at = NOW(), last_selected_at = NOW()
+WHERE asset_id = ${sqlQuote(state.assetId)}
+`);
+    return;
+  }
+  const newAssetId = uuidLike('asset');
+  await runSql(`
+INSERT INTO ${TABLE_ASSET} (asset_id, asset_name)
+VALUES (${sqlQuote(newAssetId)}, ${sqlQuote(TARGET_ASSET_NAME)})
+`);
+  const res2 = await runSql(`
+SELECT asset_id, asset_name, created_at, updated_at, last_selected_at
+FROM ${TABLE_ASSET}
+WHERE asset_id = ${sqlQuote(newAssetId)}
+`);
+  const row = (res2.rows && res2.rows[0]) ? res2.rows[0] : null;
+  state.assetRows = row ? [row] : [];
+  state.assetId = newAssetId;
+  state.assetName = TARGET_ASSET_NAME;
+  state.assetMeta = row;
+}
+async function loadVersions() {
+  const res = await runSql(`
+SELECT version_id, asset_id, template_name, template_file_name, notes,
+       template_file_data, version_number, is_active, created_at
+FROM ${TABLE_VERSION}
+WHERE asset_id = ${sqlQuote(state.assetId)}
+ORDER BY version_number DESC, created_at DESC
+`);
+  state.versions = (Array.isArray(res.rows) ? res.rows : []).map(r => Object.assign({}, r, {
+    is_active:normalizeBool(r.is_active)
+  }));
+}
+function getActiveVersion() {
+  return state.versions.find(v => v.is_active) || state.versions[0] || null;
+}
+async function loadActiveTemplateIntoState() {
+  const active = getActiveVersion();
+  if (!active) {
+    state.currentTemplateRow = null;
+    state.currentTemplateFile = null;
+    return;
+  }
+  state.currentTemplateRow = active;
+  state.currentTemplateFile = base64ToFile(
+    active.template_file_data,
+    active.template_file_name || (active.template_name || 'template') + '.docx',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  );
+}
+function renderHeaderChips() {
+  const active = getActiveVersion();
+  el.repoNameChip.textContent = state.assetName || TARGET_ASSET_NAME;
+  el.versionCountChip.textContent = String(state.versions.length);
+  el.activeVersionChip.textContent = active ? ('v' + active.version_number) : 'None';
+  el.duplicateCountChip.textContent = String(state.assetRows.length);
+}
+function renderRepoMeta() {
+  const active = getActiveVersion();
+  const latest = state.versions[0] || null;
+  el.repoMeta.innerHTML = `
+<div class="meta-box">
+  <div class="k">Bound repository</div>
+  <div class="v">${esc(state.assetName || TARGET_ASSET_NAME)}</div>
+</div>
+<div class="meta-box">
+  <div class="k">Repository asset ID</div>
+  <div class="v mono">${esc(state.assetId || '-')}</div>
+</div>
+<div class="meta-box">
+  <div class="k">Active template</div>
+  <div class="v">${active ? '<b>v' + esc(String(active.version_number)) + '</b> ' + esc(active.template_file_name || active.template_name || 'Template') : '<span class="empty">No template uploaded yet</span>'}</div>
+</div>
+<div class="meta-box">
+  <div class="k">Latest upload</div>
+  <div class="v">${latest ? esc(fmtDateTime(latest.created_at) || '') : '<span class="empty">None</span>'}</div>
+</div>
+<div class="meta-box">
+  <div class="k">Duplicate repository rows found</div>
+  <div class="v">
+    ${esc(String(state.assetRows.length))}
+    ${state.assetRows.length > 1 ? '<br><span style="color:#667085;">Using the most recently touched repository row with versions.</span>' : ''}
+  </div>
+</div>`;
+}
+function renderHistory() {
+  if (!state.versions.length) {
+    el.historyWrap.innerHTML = `
+<div class="notice warn">
+  No template versions saved yet. Upload your current production template once and it
+  will become the active backend version.
+</div>`;
+    return;
+  }
+  el.historyWrap.innerHTML = `
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+  <th>Version</th>
+  <th>Filename</th>
+  <th>Saved at</th>
+  <th>Change note</th>
+  <th>Status</th>
+  <th>Actions</th>
+</tr>
+</thead>
+<tbody>
+${state.versions.map(v => `
+<tr class="${v.is_active ? 'current' : ''}">
+  <td class="mono">v${esc(String(v.version_number))}</td>
+  <td>
+    <div><b>${esc(v.template_file_name || v.template_name || 'Template')}</b></div>
+    <div class="mono" style="font-size:11px;color:#667085;">${esc(v.version_id)}</div>
+  </td>
+  <td>${esc(fmtDateTime(v.created_at) || '-')}</td>
+  <td>${v.notes ? esc(v.notes) : '<span class="empty">None</span>'}</td>
+  <td>${v.is_active ? '<span class="tag ok">Active default</span>' : '<span class="tag warn">Historic</span>'}</td>
+  <td>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+      ${v.is_active ? '' : `<button class="btn sm" type="button" data-action="activate" data-id="${esc(v.version_id)}">Set active</button>`}
+      <button class="btn sm" type="button" data-action="download-version" data-id="${esc(v.version_id)}">Download</button>
+    </div>
+  </td>
+</tr>`).join('')}
+</tbody>
+</table>
+</div>`;
+}
+function renderActiveTemplateMeta() {
+  const active = getActiveVersion();
+  el.activeTemplateMeta.innerHTML = `
+<div class="meta-box">
+  <div class="k">Active version</div>
+  <div class="v">${active ? 'v' + esc(String(active.version_number)) : '<span class="empty">None</span>'}</div>
+</div>
+<div class="meta-box">
+  <div class="k">Template file</div>
+  <div class="v">${active ? esc(active.template_file_name || active.template_name || 'Template') : '<span class="empty">No active template</span>'}</div>
+</div>
+<div class="meta-box">
+  <div class="k">Saved at</div>
+  <div class="v">${active ? esc(fmtDateTime(active.created_at) || '') : '<span class="empty">None</span>'}</div>
+</div>
+<div class="meta-box">
+  <div class="k">Inline editing</div>
+  <div class="v">In the preview, the main editable values appear highlighted in red. Click and type directly there, or edit them in the form.</div>
+</div>`;
+}
+function renderInputs() {
+  el.inputGrid.innerHTML = fields.map(f => {
+    const value = state.values[f.key] !== undefined ? state.values[f.key] : (f.default || '');
+    return `
+<div class="field ${f.wide ? 'wide' : ''}">
+  <label>${esc(f.label)}${f.required ? ' *' : ''}</label>
+  <input
+    class="ctrl"
+    data-key="${esc(f.key)}"
+    type="${f.type === 'date' ? 'date' : 'text'}"
+    ${f.readonly ? 'readonly' : ''}
+    value="${esc(value)}"
+    ${f.placeholder ? `placeholder="${esc(f.placeholder)}"` : ''}
+  />
+  ${f.key === 'isin' ? '<div class="help">This can also be edited directly in the preview.</div>' : ''}
+  ${f.key === 'tradeDate' || f.key === 'issueDate' ? '<div class="help">Preview inline edits accept YYYY-MM-DD or DD MMM YYYY.</div>' : ''}
+  ${f.key === 'lar' ? '<div class="help">Example: 4.10 means 4.10% per year step-up.</div>' : ''}
+</div>`;
+  }).join('');
+  el.inputGrid.querySelectorAll('[data-key]').forEach(node => {
+    node.addEventListener('input', function(e) {
+      const key = e.target.getAttribute('data-key');
+      state.values[key] = e.target.value;
+      saveDraft();
+      scheduleRender();
+    });
+    node.addEventListener('blur', function(e) {
+      const key = e.target.getAttribute('data-key');
+      if (key === 'notional') {
+        const n = parseNumber(e.target.value);
+        if (n != null) {
+          state.values[key] = fmtNum(n, 0);
+          e.target.value = state.values[key];
+        }
+      }
+      if (key === 'lar') {
+        const n = parseNumber(e.target.value);
+        if (n != null) {
+          state.values[key] = Number(n).toFixed(2);
+          e.target.value = state.values[key];
+        }
+      }
+      saveDraft();
+      scheduleRender();
+    });
+  });
+}
+function getDerived() {
+  const notional = parseNumber(state.values.notional);
+  const tenor = getIntegerTenorYears(state.values.tenor);
+  const lar = parseNumber(state.values.lar);
+  const tradeDate = state.values.tradeDate || '';
+  const issueDate = state.values.issueDate || '';
+  const scheduleDate = n => issueDate && n != null ? addYearsFollowing(issueDate, n) : '';
+  const maturityDate = issueDate && tenor != null ? addYearsFollowing(issueDate, tenor) : '';
+  const maturityYear = maturityDate ? String(new Date(maturityDate + 'T00:00:00').getFullYear()) : '';
+  function redemptionPct(n) {
+    return lar != null && n != null ? (100 + (Number(n) * lar)) : null;
+  }
+  const schedule = {};
+  for (let i = 1; i <= 10; i++) {
+    schedule['td' + i] = scheduleDate(i);
+    schedule['r' + i] = redemptionPct(i);
+  }
+  const callCount = tenor != null ? Math.max(tenor - 1, 0) : 0;
+  const callSchedule = [];
+  for (let n = 1; n <= callCount; n++) {
+    const callDateIso = addYearsFollowing(issueDate, n);
+    const callDate = fmtWordDate(callDateIso);
+    const redemptionPctValue = redemptionPct(n);
+    callSchedule.push({
+      n,
+      callDate,
+      redemptionPct:redemptionPctValue != null ? fmtPct(redemptionPctValue, 3) : '',
+      sentence:(redemptionPctValue != null ? fmtPct(redemptionPctValue, 3) : '') + ' of the Calculation Amount on ' + callDate
+    });
+  }
+  const displaySchedule = {};
+  for (let i = 1; i <= 10; i++) {
+    displaySchedule['td' + i] = fmtWordDate(scheduleDate(i));
+    displaySchedule['r' + i] = redemptionPct(i) != null ? fmtPct(redemptionPct(i), 3) : '';
+  }
+  return {
+    raw:{
+      isin:String(state.values.isin || '').trim(),
+      notional,
+      tradeDate,
+      issueDate,
+      tenor,
+      lar,
+      maturityDate,
+      maturityYear,
+      tdTenor:scheduleDate(tenor),
+      rTenor:redemptionPct(tenor),
+      callSchedule
+    },
+    display:{
+      isin:String(state.values.isin || '').trim(),
+      notional:notional != null ? fmtNum(notional, 0) : '',
+      tradeDate:fmtWordDate(tradeDate),
+      issueDate:fmtWordDate(issueDate),
+      tenor:tenor != null ? String(Number(tenor)) : '',
+      lar:lar != null ? fmtPct(lar, 2) : '',
+      maturityDate:fmtWordDate(maturityDate),
+      maturityYear:maturityYear,
+      tdTenor:fmtWordDate(scheduleDate(tenor)),
+      rTenor:redemptionPct(tenor) != null ? fmtPct(redemptionPct(tenor), 3) : '',
+      schedule:displaySchedule,
+      callSchedule:callSchedule
+    }
+  };
+}
+function renderDerived() {
+  const d = getDerived();
+  const scheduleRows = [];
+  scheduleRows.push(`<tr><td>Maturity Date</td><td>${d.display.maturityDate || '<span class="empty">pending inputs</span>'}</td><td>Issue Date + Tenor years</td></tr>`);
+  scheduleRows.push(`<tr><td>Maturity Year</td><td>${d.display.maturityYear || '<span class="empty">pending inputs</span>'}</td><td>Year of derived maturity date</td></tr>`);
+  scheduleRows.push(`<tr><td>Trade Date + Tenor</td><td>${d.display.tdTenor || '<span class="empty">pending inputs</span>'}</td><td>Issue Date + Tenor years</td></tr>`);
+  scheduleRows.push(`<tr><td>Red_AMT Trade Date + Tenor</td><td>${d.display.rTenor || '<span class="empty">pending inputs</span>'}</td><td>100.000% + Tenor * LAR</td></tr>`);
+  const callRows = d.display.callSchedule.length
+    ? d.display.callSchedule.map(row => `
+<tr>
+  <td>Call ${esc(String(row.n))}</td>
+  <td>${esc(row.callDate)}</td>
+  <td>${esc(row.redemptionPct)}</td>
+</tr>`).join('')
+    : '<tr><td colspan="3"><span class="empty">Call schedule appears once Issue Date, Tenor and LAR are entered.</span></td></tr>';
+  el.derivedWrap.innerHTML = `
+<div class="table-wrap" style="margin-bottom:12px;">
+<table style="min-width:520px;">
+<thead>
+<tr>
+  <th>Derived field</th>
+  <th>Value</th>
+  <th>Rule</th>
+</tr>
+</thead>
+<tbody>${scheduleRows.join('')}</tbody>
+</table>
+</div>
+<div class="table-wrap">
+<table style="min-width:520px;">
+<thead>
+<tr>
+  <th>Call</th>
+  <th>Date</th>
+  <th>Redemption</th>
+</tr>
+</thead>
+<tbody>${callRows}</tbody>
+</table>
+</div>`;
+}
+function renderSummary() {
+  const d = getDerived();
+  const active = getActiveVersion();
+  el.summaryGrid.innerHTML = `
+<div class="summary-box">
+  <h4>Template</h4>
+  <div class="summary-row"><span>Repository</span><strong>${esc(state.assetName || TARGET_ASSET_NAME)}</strong></div>
+  <div class="summary-row"><span>Version</span><strong>${active ? 'v' + esc(String(active.version_number)) : '-'}</strong></div>
+  <div class="summary-row"><span>Template</span><strong>${active ? esc(active.template_file_name || active.template_name || 'Template') : '-'}</strong></div>
+</div>
+<div class="summary-box">
+  <h4>Parameters</h4>
+  <div class="summary-row"><span>Notional</span><strong>${esc(d.display.notional || '-')}</strong></div>
+  <div class="summary-row"><span>Trade Date</span><strong>${esc(d.display.tradeDate || '-')}</strong></div>
+  <div class="summary-row"><span>Issue Date</span><strong>${esc(d.display.issueDate || '-')}</strong></div>
+  <div class="summary-row"><span>Tenor</span><strong>${esc(d.display.tenor ? d.display.tenor + ' years' : '-')}</strong></div>
+  <div class="summary-row"><span>LAR</span><strong>${esc(d.display.lar || '-')}</strong></div>
+  <div class="summary-row"><span>Maturity</span><strong>${esc(d.display.maturityDate || '-')}</strong></div>
+</div>`;
+}
+function buildTemplateData(previewMode) {
+  const d = getDerived();
+  const out = {
+    'Notional':previewMode ? PREVIEW_MARKERS.notional : (d.display.notional || ''),
+    'Maturity Year':d.display.maturityYear || '',
+    'Maturity DD MMM YYYY':d.display.maturityDate || '',
+    'Trade Date':previewMode ? PREVIEW_MARKERS.tradeDate : (d.display.tradeDate || ''),
+    'Issue Date':previewMode ? PREVIEW_MARKERS.issueDate : (d.display.issueDate || ''),
+    'Tenor':previewMode ? PREVIEW_MARKERS.tenor : (d.display.tenor || ''),
+    'LAR':previewMode ? PREVIEW_MARKERS.lar : (d.display.lar || ''),
+    'Trade Date + Tenor':d.display.tdTenor || '',
+    'Red_AMT Trade Date + Tenor':d.display.rTenor || '',
+    'ISIN':previewMode ? PREVIEW_MARKERS.isin : (d.display.isin || '')
+  };
+  for (let i = 1; i <= 10; i++) {
+    out['Trade Date + ' + i] = d.display.schedule['td' + i] || '';
+    out['Red_AMT Trade Date + ' + i] = d.display.schedule['r' + i] || '';
+  }
+  return out;
+}
+function patchXmlLiteralPlaceholders(xml) {
+  const s = String(xml || '');
+  const replacement = 'ISIN &lt;&lt;ISIN&gt;&gt;';
+  function skipSpace(text, pos) {
+    while (pos < text.length) {
+      if (text[pos] === ' ' || text[pos] === '\t' || text[pos] === '\n' || text[pos] === '\r' || text[pos] === '\u00A0') {
+        pos += 1;
+        continue;
+      }
+      if (text.slice(pos, pos + 6) === '&nbsp;') {
+        pos += 6;
+        continue;
+      }
+      break;
+    }
+    return pos;
+  }
+  let out = '';
+  let i = 0;
+  while (i < s.length) {
+    if (s.slice(i, i + 4) === 'ISIN') {
+      let j = skipSpace(s, i + 4);
+      if (s[j] === '[') {
+        j += 1;
+        j = skipSpace(s, j);
+        if (s[j] === ']') {
+          out += replacement;
+          i = j + 1;
+          continue;
+        }
+      }
+    }
+    out += s[i];
+    i += 1;
+  }
+  return out;
+}
+const CALL_OPTION_HEADING_NORMALIZED = 'redemption amount (call option)';
+const CALL_OPTION_STOP_HEADINGS = [
+  'redemption at maturity',
+  'final redemption amount',
+  'redemption at option of noteholder',
+  'put option'
+];
+function xmlEscapeText(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+function decodeXmlEntities(s) {
+  return String(s == null ? '' : s)
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, '&');
+}
+function normalizeXmlText(xml) {
+  return decodeXmlEntities(
+    String(xml || '')
+      .replace(/<w:tab\b[^>]*\/>/g, '')
+      .replace(/<w:br\b[^>]*\/>/g, '')
+      .replace(/<[^>]+>/g, '')
+  ).replace(/\u00A0/g, ' ').replace(/\s+/g, ' ').trim();
+}
+function normalizeMatchText(text) {
+  return normalizeXmlText(text).toLowerCase();
+}
+function isBlankParagraph(paragraphXml) {
+  return normalizeMatchText(paragraphXml) === '';
+}
+function isCallOptionHeadingParagraph(paragraphXml) {
+  return normalizeMatchText(paragraphXml).includes(CALL_OPTION_HEADING_NORMALIZED);
+}
+function isStopHeadingParagraph(paragraphXml) {
+  const text = normalizeMatchText(paragraphXml);
+  return CALL_OPTION_STOP_HEADINGS.some(h => text.includes(h));
+}
+function isCallOptionLineText(text) {
+  const t = String(text || '').toLowerCase();
+  return t.includes('of the calculation amount') && t.includes(' on ');
+}
+function extractLinesFromParagraph(paragraphXml) {
+  const BR_MARKER = '__HSBC_CALL_BR__';
+  const text = decodeXmlEntities(
+    String(paragraphXml || '')
+      .replace(/<w:tab\b[^>]*\/>/g, '')
+      .replace(/<w:br\b[^>]*\/>/g, BR_MARKER)
+      .replace(/<[^>]+>/g, ' ')
+  ).replace(/\u00A0/g, ' ');
+  return text
+    .split(BR_MARKER)
+    .map(line => line.replace(/\s+/g, ' ').trim());
+}
+function countCallLinesInParagraph(paragraphXml) {
+  return extractLinesFromParagraph(paragraphXml).filter(isCallOptionLineText).length;
+}
+function isCallOptionLineParagraph(paragraphXml) {
+  return countCallLinesInParagraph(paragraphXml) > 0;
+}
+function getParagraphOpenTag(paragraphXml) {
+  const m = String(paragraphXml || '').match(/^<w:p\b[^>]*>/);
+  return m ? m[0] : '<w:p>';
+}
+function getParagraphProperties(paragraphXml) {
+  const m = String(paragraphXml || '').match(/<w:pPr\b[\s\S]*?<\/w:pPr>/);
+  return m ? m[0] : '';
+}
+function getFirstTextRunProperties(paragraphXml) {
+  const runRegex = /<w:r\b[\s\S]*?<\/w:r>/g;
+  let m;
+  while ((m = runRegex.exec(String(paragraphXml || ''))) !== null) {
+    const runXml = m[0];
+    if (/<w:t\b/.test(runXml)) {
+      const rPrMatch = runXml.match(/<w:rPr\b[\s\S]*?<\/w:rPr>/);
+      return rPrMatch ? rPrMatch[0] : '';
+    }
+  }
+  return '';
+}
+function buildCallOptionSentence(targetN) {
+  return '<<Red_AMT Trade Date + ' + targetN + '>> of the Calculation Amount on <<Trade Date + ' + targetN + '>>';
+}
+function rebuildParagraphWithCallTokens(paragraphXml, targetN) {
+  const openTag = getParagraphOpenTag(paragraphXml);
+  const pPr = getParagraphProperties(paragraphXml);
+  const rPr = getFirstTextRunProperties(paragraphXml);
+  const sentence = buildCallOptionSentence(targetN);
+  return openTag + pPr + '<w:r>' + rPr + '<w:t xml:space="preserve">' + xmlEscapeText(sentence) + '</w:t></w:r></w:p>';
+}
+function rebuildParagraphFromLines(paragraphXml, lines) {
+  const openTag = getParagraphOpenTag(paragraphXml);
+  const pPr = getParagraphProperties(paragraphXml);
+  const rPr = getFirstTextRunProperties(paragraphXml);
+  let body = '';
+  if (!lines.length) {
+    body = '<w:r>' + rPr + '<w:t xml:space="preserve"></w:t></w:r>';
+  } else {
+    lines.forEach((line, idx) => {
+      if (idx > 0) body += '<w:r>' + rPr + '<w:br/></w:r>';
+      body += '<w:r>' + rPr + '<w:t xml:space="preserve">' + xmlEscapeText(line) + '</w:t></w:r>';
+    });
+  }
+  return openTag + pPr + body + '</w:p>';
+}
+function findLargestCallLineBlock(lines) {
+  let best = null;
+  let i = 0;
+  while (i < lines.length) {
+    if (!isCallOptionLineText(lines[i])) {
+      i += 1;
+      continue;
+    }
+    const start = i;
+    while (i < lines.length && isCallOptionLineText(lines[i])) i += 1;
+    const end = i - 1;
+    const len = end - start + 1;
+    if (!best || len > best.len) best = { start, end, len };
+  }
+  return best;
+}
+function expandCallOptionLinesInsideParagraph(paragraphXml, callCount) {
+  if (callCount <= 0) return paragraphXml;
+  const lines = extractLinesFromParagraph(paragraphXml);
+  const block = findLargestCallLineBlock(lines);
+  if (!block || block.len < 1) return paragraphXml;
+  const before = lines.slice(0, block.start);
+  const after = lines.slice(block.end + 1);
+  const generated = [];
+  for (let n = 1; n <= callCount; n++) generated.push(buildCallOptionSentence(n));
+  return rebuildParagraphFromLines(paragraphXml, before.concat(generated, after));
+}
+function getParagraphMeta(paragraphXml, index) {
+  return {
+    index,
+    end:index + String(paragraphXml || '').length,
+    text:paragraphXml
+  };
+}
+function findCallOptionSections(paragraphs) {
+  const sections = [];
+  let i = 0;
+  while (i < paragraphs.length) {
+    if (!isCallOptionHeadingParagraph(paragraphs[i].text)) {
+      i += 1;
+      continue;
+    }
+    let j = i + 1;
+    while (j < paragraphs.length && isBlankParagraph(paragraphs[j].text)) j += 1;
+    if (j >= paragraphs.length) {
+      i += 1;
+      continue;
+    }
+    if (isStopHeadingParagraph(paragraphs[j].text)) {
+      i = j;
+      continue;
+    }
+    if (countCallLinesInParagraph(paragraphs[j].text) > 1) {
+      sections.push({
+        start:paragraphs[j].index,
+        end:paragraphs[j].end,
+        mode:'single-paragraph',
+        baseParagraphs:[paragraphs[j].text]
+      });
+      i = j + 1;
+      continue;
+    }
+    const baseParagraphs = [paragraphs[j].text];
+    let endPos = paragraphs[j].end;
+    let k = j + 1;
+    while (k < paragraphs.length) {
+      if (isStopHeadingParagraph(paragraphs[k].text)) break;
+      if (isBlankParagraph(paragraphs[k].text)) break;
+      if (!isCallOptionLineParagraph(paragraphs[k].text)) break;
+      baseParagraphs.push(paragraphs[k].text);
+      endPos = paragraphs[k].end;
+      k += 1;
+    }
+    sections.push({
+      start:paragraphs[j].index,
+      end:endPos,
+      mode:'multi-paragraph',
+      baseParagraphs
+    });
+    i = k;
+  }
+  return sections;
+}
+function buildExpandedCallParagraphBlock(baseParagraphs, callCount) {
+  if (callCount <= 0) return '';
+  let out = '';
+  const templates = baseParagraphs.length ? baseParagraphs : ['<w:p><w:r><w:t xml:space="preserve"></w:t></w:r></w:p>'];
+  for (let n = 1; n <= callCount; n++) {
+    const sourceParagraph = templates[Math.min(n - 1, templates.length - 1)];
+    out += rebuildParagraphWithCallTokens(sourceParagraph, n);
+  }
+  return out;
+}
+function expandCallableScheduleInXml(xml, tenorYears) {
+  const tenorInt = tenorYears != null ? Math.max(0, Math.floor(Number(tenorYears))) : null;
+  if (tenorInt == null) return String(xml || '');
+  const callCount = Math.max(tenorInt - 1, 0);
+  const source = String(xml || '');
+  const paraRegex = /<w:p\b[\s\S]*?<\/w:p>/g;
+  const paragraphs = [];
+  let match;
+  while ((match = paraRegex.exec(source)) !== null) {
+    paragraphs.push(getParagraphMeta(match[0], match.index));
+  }
+  if (!paragraphs.length) return source;
+  const sections = findCallOptionSections(paragraphs);
+  if (!sections.length) return source;
+  let out = '';
+  let last = 0;
+  sections.forEach(section => {
+    out += source.slice(last, section.start);
+    if (section.mode === 'single-paragraph') {
+      out += expandCallOptionLinesInsideParagraph(section.baseParagraphs[0], callCount);
+    } else {
+      out += buildExpandedCallParagraphBlock(section.baseParagraphs, callCount);
+    }
+    last = section.end;
+  });
+  out += source.slice(last);
+  return out;
+}
+async function patchLiteralPlaceholdersInArrayBuffer(arrayBuffer, tenorYears) {
+  const zip = await JSZip.loadAsync(arrayBuffer);
+  const names = Object.keys(zip.files).filter(name =>
+    /^word\/(document|header\d+|footer\d+|footnotes|endnotes)\.xml$/i.test(name)
+  );
+  for (const name of names) {
+    const file = zip.file(name);
+    if (!file) continue;
+    let xml = await file.async('string');
+    xml = patchXmlLiteralPlaceholders(xml);
+    xml = expandCallableScheduleInXml(xml, tenorYears);
+    zip.file(name, xml);
+  }
+  return await zip.generateAsync({ type:'arraybuffer' });
+}
+async function buildPopulatedDocxBlob(previewMode) {
+  if (!state.currentTemplateFile) return null;
+  if (!window.PizZip) throw new Error('PizZip library did not load.');
+  if (!getDocxtemplaterCtor()) throw new Error('Docxtemplater library did not load.');
+  const rawArrayBuffer = await state.currentTemplateFile.arrayBuffer();
+  const tenorYears = getIntegerTenorYears(state.values.tenor);
+  const patchedArrayBuffer = await patchLiteralPlaceholdersInArrayBuffer(rawArrayBuffer, tenorYears);
+  const zip = new window.PizZip(patchedArrayBuffer);
+  const DocxtemplaterCtor = getDocxtemplaterCtor();
+  let doc;
+  try {
+    doc = new DocxtemplaterCtor(zip, {
+      delimiters:{ start:'<<', end:'>>' },
+      paragraphLoop:true,
+      linebreaks:true,
+      parser:function(tag) {
+        const key = String(tag || '').trim();
+        return {
+          get:function(scope) {
+            return scope && Object.prototype.hasOwnProperty.call(scope, key) ? scope[key] : '';
+          }
+        };
+      }
+    });
+  } catch (err) {
+    throw new Error('The DOCX template could not be opened for token rendering.');
+  }
+  try {
+    doc.render(buildTemplateData(!!previewMode));
+  } catch (err) {
+    let message = 'DOCX token rendering failed.';
+    if (err && err.properties && Array.isArray(err.properties.errors) && err.properties.errors.length) {
+      message += ' ' + err.properties.errors
+        .map(e => e.properties && e.properties.explanation ? e.properties.explanation : e.message)
+        .join(' | ');
+    } else if (err && err.message) {
+      message += ' ' + err.message;
+    }
+    throw new Error(message);
+  }
+  return doc.getZip().generate({
+    type:'blob',
+    mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  });
+}
+async function renderHtmlPreviewFromDocxBlob(blob) {
+  if (!window.mammoth) throw new Error('Mammoth library did not load.');
+  const ab = await blob.arrayBuffer();
+  const result = await window.mammoth.convertToHtml(
+    { arrayBuffer:ab },
+    {
+      convertImage:window.mammoth.images.inline(function(image) {
+        return image.read('base64').then(function(base64String) {
+          return { src:'data:' + image.contentType + ';base64,' + base64String };
+        });
+      })
+    }
+  );
+  return {
+    html:result.value || '',
+    messages:result.messages || []
+  };
+}
+function getEditableDisplayMap() {
+  const d = getDerived();
+  return {
+    isin:d.display.isin || '',
+    notional:d.display.notional || '',
+    tradeDate:d.display.tradeDate || '',
+    issueDate:d.display.issueDate || '',
+    tenor:d.display.tenor || '',
+    lar:d.display.lar || ''
+  };
+}
+function decoratePreviewHtml(html) {
+  let out = html || '<div style="color:#667085;">Preview returned no HTML.</div>';
+  const display = getEditableDisplayMap();
+  function replacement(field, placeholder) {
+    return '<span class="inline-edit" contenteditable="true" spellcheck="false" data-field="' + field + '" data-placeholder="' + esc(placeholder) + '">' + esc(display[field] || '') + '</span>';
+  }
+  out = out.split(PREVIEW_MARKERS.isin).join(replacement('isin', 'Click to type ISIN'));
+  out = out.split(PREVIEW_MARKERS.notional).join(replacement('notional', 'Notional'));
+  out = out.split(PREVIEW_MARKERS.tradeDate).join(replacement('tradeDate', 'Trade Date'));
+  out = out.split(PREVIEW_MARKERS.issueDate).join(replacement('issueDate', 'Issue Date'));
+  out = out.split(PREVIEW_MARKERS.tenor).join(replacement('tenor', 'Tenor'));
+  out = out.split(PREVIEW_MARKERS.lar).join(replacement('lar', 'LAR'));
+  return `
+<div class="inline-banner">
+  <span class="label">Inline edit</span>
+  <span class="hint">Click any highlighted red value in the preview, type, then click away. The form and derived values will update automatically.</span>
+</div>
+${out}`;
+}
+function normaliseInlineField(field, text) {
+  const raw = String(text || '').replace(/\u00A0/g, ' ').trim();
+  if (field === 'isin') return raw;
+  if (field === 'notional') {
+    if (!raw) return '';
+    const n = parseNumber(raw);
+    if (n == null) throw new Error('Notional must be numeric.');
+    return fmtNum(n, 0);
+  }
+  if (field === 'tradeDate' || field === 'issueDate') {
+    if (!raw) return '';
+    const iso = parseHumanDate(raw);
+    if (!iso) throw new Error('Date must be YYYY-MM-DD or DD MMM YYYY.');
+    return iso;
+  }
+  if (field === 'tenor') {
+    if (!raw) return '';
+    const n = parseTenorYears(raw);
+    if (n == null) throw new Error('Tenor must contain a number, e.g. 5 or 7Y.');
+    return raw.toUpperCase();
+  }
+  if (field === 'lar') {
+    if (!raw) return '';
+    const n = parseNumber(raw);
+    if (n == null) throw new Error('LAR must be numeric.');
+    return Number(n).toFixed(2);
+  }
+  return raw;
+}
+function syncFieldToForm(field) {
+  const input = el.inputGrid.querySelector('[data-key="' + field + '"]');
+  if (input) input.value = state.values[field] || '';
+}
+function wireInlinePreviewEditors() {
+  el.previewHost.querySelectorAll('.inline-edit').forEach(node => {
+    node.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        node.blur();
+      }
+    });
+    node.addEventListener('blur', function() {
+      const field = node.getAttribute('data-field');
+      const text = node.textContent || '';
+      try {
+        const val = normaliseInlineField(field, text);
+        state.values[field] = val;
+        saveDraft();
+        syncFieldToForm(field);
+        renderDerived();
+        renderSummary();
+        scheduleRender();
+        setStatus('Inline edit applied.', 'ok');
+      } catch (err) {
+        setStatus(esc(err.message || String(err)), 'warn');
+        scheduleRender();
+      }
+    });
+  });
+}
+async function renderPreview() {
+  const seq = ++renderSeq;
+  setReady(false);
+  if (!state.currentTemplateFile) {
+    el.previewState.textContent = 'Waiting for active template';
+    el.previewSub.textContent = 'No active template is available yet.';
+    el.previewBadge.className = 'badge warn';
+    el.previewBadge.textContent = 'No template';
+    el.templateHeadText.textContent = 'No template loaded';
+    el.templateHeadMeta.textContent = 'Populate preview';
+    el.previewHost.innerHTML = '<div style="color:#667085;font-size:13px;line-height:1.7;">Upload or activate a template in the Template tab first.</div>';
+    setReady(true);
+    return;
+  }
+  try {
+    el.previewState.textContent = 'Rendering preview';
+    el.previewSub.textContent = 'Click highlighted red values in the preview to edit inline.';
+    el.previewBadge.className = 'badge warn';
+    el.previewBadge.innerHTML = '<span class="live-dot"></span>Rendering';
+    el.templateHeadText.textContent = state.currentTemplateRow
+      ? (state.currentTemplateRow.template_file_name || state.currentTemplateRow.template_name || 'Active template')
+      : 'Active template';
+    el.templateHeadMeta.textContent = 'Version ' + (state.currentTemplateRow ? ('v' + state.currentTemplateRow.version_number) : '-');
+    const previewBlob = await buildPopulatedDocxBlob(true);
+    if (seq !== renderSeq) return;
+    const rendered = await renderHtmlPreviewFromDocxBlob(previewBlob);
+    if (seq !== renderSeq) return;
+    el.previewHost.innerHTML = decoratePreviewHtml(rendered.html);
+    wireInlinePreviewEditors();
+    el.previewState.textContent = 'Preview ready';
+    el.previewBadge.className = 'badge ok';
+    el.previewBadge.textContent = 'Ready';
+    el.templateHeadMeta.textContent = 'Version ' + (state.currentTemplateRow ? ('v' + state.currentTemplateRow.version_number) : '-') +
+      ' · rendered ' + new Date().toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  } catch (err) {
+    el.previewState.textContent = 'Preview failed';
+    el.previewBadge.className = 'badge err';
+    el.previewBadge.textContent = 'Error';
+    el.previewHost.innerHTML = '<div style="color:#7a1d28;font-size:13px;line-height:1.7;">Could not populate or preview the DOCX.<br><br>' + esc(err.message || String(err)) + '</div>';
+  } finally {
+    setReady(true);
+  }
+}
+async function renderPopulateArea() {
+  renderActiveTemplateMeta();
+  renderInputs();
+  renderDerived();
+  renderSummary();
+  await renderPreview();
+}
+async function refreshAll() {
+  await bindExistingRepository();
+  await loadVersions();
+  await loadActiveTemplateIntoState();
+  renderHeaderChips();
+  renderRepoMeta();
+  renderHistory();
+  state.values = loadDraft();
+  await renderPopulateArea();
+}
+function scheduleRender() {
+  clearTimeout(renderTimer);
+  renderTimer = setTimeout(async function() {
+    renderDerived();
+    renderSummary();
+    await renderPreview();
+  }, 180);
+}
+async function activateVersion(versionId) {
+  setStatus('Updating active template...', 'ok');
+  await runSql(`UPDATE ${TABLE_VERSION} SET is_active = FALSE WHERE asset_id = ${sqlQuote(state.assetId)}`);
+  await runSql(`UPDATE ${TABLE_VERSION} SET is_active = TRUE WHERE version_id = ${sqlQuote(versionId)}`);
+  await refreshAll();
+  setStatus('Active template updated.', 'ok');
+  notify('Active template updated.');
+}
+async function downloadVersion(versionId) {
+  setStatus('Preparing template download...', 'ok');
+  const row = state.versions.find(v => v.version_id === versionId);
+  if (!row) {
+    setStatus('Could not find that template version.', 'err');
+    return;
+  }
+  const blob = base64ToBlob(row.template_file_data, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = row.template_file_name || ((row.template_name || 'template') + '.docx');
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1200);
+  setStatus('Download started.', 'ok');
+  notify('Template download started.');
+}
+async function uploadTemplate(file) {
+  if (!file || !/\.docx$/i.test(file.name)) {
+    notify('Please upload a .docx file.');
+    return;
+  }
+  setStatus('Reading template file...', 'ok');
+  const base64 = await fileToBase64(file);
+  const active = getActiveVersion();
+  if (active && String(active.template_file_data || '') === String(base64 || '')) {
+    setStatus('No change detected. Uploaded file matches the current active template, so no new version was created.', 'warn');
+    notify('No change detected - existing active template retained.');
+    return;
+  }
+  const nextVersion = state.versions.reduce((m, v) => Math.max(m, Number(v.version_number) || 0), 0) + 1;
+  const versionId = uuidLike('ver');
+  const note = String(el.templateNotes.value || '').trim();
+  const templateName = file.name.replace(/\.docx$/i, '');
+  setStatus('Saving new backend version...', 'ok');
+  await runSql(`UPDATE ${TABLE_VERSION} SET is_active = FALSE WHERE asset_id = ${sqlQuote(state.assetId)}`);
+  await runSql(`
+INSERT INTO ${TABLE_VERSION}
+(version_id, asset_id, template_name, template_file_name, template_file_data, source_kind, notes, version_number, is_active)
+VALUES
+(
+  ${sqlQuote(versionId)},
+  ${sqlQuote(state.assetId)},
+  ${sqlQuote(templateName)},
+  ${sqlQuote(file.name)},
+  ${sqlQuote(base64)},
+  'upload',
+  ${sqlQuote(note)},
+  ${Number(nextVersion)},
+  TRUE
+)
+`);
+  await runSql(`
+UPDATE ${TABLE_ASSET}
+SET updated_at = NOW(), last_selected_at = NOW()
+WHERE asset_id = ${sqlQuote(state.assetId)}
+`);
+  el.templateNotes.value = '';
+  await refreshAll();
+  setTab('populate');
+  setStatus('New template version uploaded and set as active.', 'ok');
+  notify('New template version uploaded.');
+}
+async function downloadPopulatedDocx() {
+  if (!state.currentTemplateFile) {
+    setStatus('No active template available for population.', 'err');
+    return;
+  }
+  try {
+    setStatus('Generating populated DOCX...', 'ok');
+    const blob = await buildPopulatedDocxBlob(false);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const base = (state.currentTemplateRow &&
+      (state.currentTemplateRow.template_file_name || state.currentTemplateRow.template_name) || 'template').replace(/\.docx$/i, '');
+    a.href = url;
+    a.download = base + '_populated.docx';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1200);
+    setStatus('Populated DOCX download started.', 'ok');
+  } catch (err) {
+    setStatus('Could not generate populated DOCX.<br><br><span class="mono">' + esc(err.message || String(err)) + '</span>', 'err');
+  }
+}
+function buildPdfNode() {
+  const wrap = document.createElement('div');
+  wrap.style.background = '#fff';
+  wrap.style.width = '794px';
+  wrap.style.padding = '24px 28px 30px';
+  wrap.innerHTML = `
+<div style="font-family:Arial,sans-serif;color:#111;">
+  <div style="border-bottom:2px solid #db0011;padding-bottom:10px;margin-bottom:16px;">
+    <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#db0011;font-weight:700;">HSBC Structured Products</div>
+    <div style="font-size:22px;font-weight:700;line-height:1.2;margin-top:4px;">Callable Linear Zero preview</div>
+    <div style="font-size:12px;color:#667085;margin-top:6px;">Generated from the active backend template.</div>
+  </div>
+  <div style="margin-bottom:16px;">${el.summaryGrid.innerHTML}</div>
+  <div id="pdfPreviewContent">${el.previewHost.innerHTML}</div>
+</div>`;
+  const style = document.createElement('style');
+  style.textContent = `
+#pdfPreviewContent, #pdfPreviewContent *{font-family:Arial,sans-serif;box-sizing:border-box}
+#pdfPreviewContent img{max-width:100%;height:auto;display:block}
+#pdfPreviewContent table{border-collapse:collapse;width:100%;table-layout:fixed;margin:12px 0}
+#pdfPreviewContent td,#pdfPreviewContent th{border:1px solid #d9dde5;padding:7px 8px;vertical-align:top;word-break:break-word}
+#pdfPreviewContent p{line-height:1.6;margin:.55em 0}
+#pdfPreviewContent ul,#pdfPreviewContent ol{padding-left:22px}
+.inline-edit{border-bottom:2px solid #db0011;padding:1px 4px;background:#fff7f8;color:#7a0010;font-weight:700}
+.inline-banner{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 12px;border:1px solid #f3d3d8;background:#fff8f8;border-radius:8px;margin-bottom:14px}
+`;
+  wrap.prepend(style);
+  return wrap;
+}
+async function exportPdf() {
+  if (!state.currentTemplateFile) {
+    setStatus('No active template available for PDF export.', 'err');
+    return;
+  }
+  if (!window.html2pdf) {
+    setStatus('PDF export library did not load.', 'err');
+    return;
+  }
+  let pdfHost = null;
+  try {
+    setStatus('Exporting PDF...', 'ok');
+    const pdfNode = buildPdfNode();
+    // html2canvas cannot measure an off-flow (fixed/absolute) node - it clones the
+    // node and reads its layout height, which comes back as 0 once the node itself
+    // is taken out of normal flow. Keep pdfNode static and hide it via a clipped
+    // zero-size outer host instead, so html2canvas sees a normally laid out node.
+    pdfHost = document.createElement('div');
+    pdfHost.style.cssText = 'position:fixed;left:0;top:0;width:0;height:0;overflow:hidden;opacity:0;pointer-events:none;z-index:-1;';
+    pdfHost.appendChild(pdfNode);
+    document.body.appendChild(pdfHost);
+    const base = (state.currentTemplateRow &&
+      (state.currentTemplateRow.template_file_name || state.currentTemplateRow.template_name) || 'template').replace(/\.docx$/i, '');
+    const filename = base + '_preview.pdf';
+    const opt = {
+      margin:[8,8,10,8],
+      filename:filename,
+      image:{ type:'jpeg', quality:0.98 },
+      html2canvas:{ scale:2, useCORS:true, backgroundColor:'#ffffff' },
+      jsPDF:{ unit:'mm', format:'a4', orientation:'portrait' },
+      pagebreak:{ mode:['css', 'legacy'] }
+    };
+    await window.html2pdf().set(opt).from(pdfNode).save();
+    pdfHost.remove();
+    setStatus('PDF export started.', 'ok');
+  } catch (err) {
+    if (pdfHost) pdfHost.remove();
+    setStatus('Could not export PDF.<br><br><span class="mono">' + esc(err.message || String(err)) + '</span>', 'err');
+  }
+}
+function resetValues() {
+  state.values = Object.assign({}, defaultValues);
+  saveDraft();
+  renderInputs();
+  scheduleRender();
+  setStatus('Values reset.', 'ok');
+}
+function setTab(tab) {
+  const isTemplate = tab === 'template';
+  el.tabTemplate.classList.toggle('active', isTemplate);
+  el.tabPopulate.classList.toggle('active', !isTemplate);
+  el.panelTemplate.classList.toggle('active', isTemplate);
+  el.panelPopulate.classList.toggle('active', !isTemplate);
+}
+function wire() {
+  el.tabTemplate.addEventListener('click', function() { setTab('template'); });
+  el.tabPopulate.addEventListener('click', function() { setTab('populate'); });
+  el.uploadBtn.addEventListener('click', function() {
+    el.templateInput.click();
+  });
+  el.templateInput.addEventListener('change', async function(e) {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    try {
+      await uploadTemplate(file);
+    } catch (err) {
+      setStatus('Upload failed.<br><br><span class="mono">' + esc(err.message || String(err)) + '</span>', 'err');
+    }
+  });
+  el.refreshBtn.addEventListener('click', async function() {
+    try {
+      setStatus('Refreshing backend state...', 'ok');
+      await refreshAll();
+      setStatus('History refreshed.', 'ok');
+      notify('History refreshed.');
+    } catch (err) {
+      setStatus('Refresh failed.<br><br><span class="mono">' + esc(err.message || String(err)) + '</span>', 'err');
+    }
+  });
+  el.historyWrap.addEventListener('click', async function(e) {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+    const action = btn.getAttribute('data-action');
+    const id = btn.getAttribute('data-id');
+    try {
+      if (action === 'activate') {
+        await activateVersion(id);
+      } else if (action === 'download-version') {
+        await downloadVersion(id);
+      }
+    } catch (err) {
+      setStatus('Action failed.<br><br><span class="mono">' + esc(err.message || String(err)) + '</span>', 'err');
+    }
+  });
+  el.reloadActiveBtn.addEventListener('click', async function() {
+    try {
+      setStatus('Reloading active template...', 'ok');
+      await loadVersions();
+      await loadActiveTemplateIntoState();
+      renderHeaderChips();
+      renderRepoMeta();
+      renderHistory();
+      await renderPopulateArea();
+      setStatus('Active template reloaded.', 'ok');
+      notify('Active template reloaded.');
+    } catch (err) {
+      setStatus('Reload failed.<br><br><span class="mono">' + esc(err.message || String(err)) + '</span>', 'err');
+    }
+  });
+  el.downloadDocxBtn.addEventListener('click', downloadPopulatedDocx);
+  el.exportPdfBtn.addEventListener('click', exportPdf);
+  el.resetBtn.addEventListener('click', resetValues);
+}
+async function init() {
+  setReady(false);
+  wire();
+  try {
+    await bindExistingRepository();
+    state.values = loadDraft();
+    await loadVersions();
+    await loadActiveTemplateIntoState();
+    renderHeaderChips();
+    renderRepoMeta();
+    renderHistory();
+    await renderPopulateArea();
+    setStatus('Ready. Template history and populate flow are bound to the existing backend repository.', 'ok');
+    setReady(true);
+  } catch (err) {
+    setStatus(
+      'Could not initialise the Callable Linear Zero workspace.<br><br>' +
+      '<span class="mono">' + esc(err.message || String(err)) + '</span><br><br>' +
+      'This board only uses SELECT / INSERT / UPDATE against existing backend tables.',
+      'err'
+    );
+    setReady(true);
+  }
+}
+init();
+})();
+</script>
+<script>
+/* Roadmap product dropdowns - front-end staging scaffold only.
+   Deliberately isolated from the backend workspace logic above:
+   selecting a .docx here never touches sp_asset_registry / sp_template_versions
+   or any /studio API. Templates are staged in-memory for preview until a real
+   backend for that product line comes online. */
+(function() {
+  const groups = Array.prototype.slice.call(document.querySelectorAll('.prod-group'));
+  if (!groups.length) return;
+
+  function escHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  groups.forEach(function(group, idx) {
+    const product = group.getAttribute('data-product') || 'This product';
+    const btn = group.querySelector('.prod.roadmap');
+    const panel = group.querySelector('.prod-panel');
+    if (!btn || !panel) return;
+
+    const inputId = 'stageInput_' + idx;
+    panel.innerHTML =
+      '<div class="stage-drop">' +
+        '<input id="' + inputId + '" class="stage-input" type="file" accept=".docx" hidden />' +
+        '<button class="stage-btn" type="button">' +
+          '<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+            '<path d="M8 10.5V3M8 3L5 6M8 3l3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>' +
+            '<path d="M3 11.5v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>' +
+          '</svg>Upload template</button>' +
+        '<div class="stage-file"></div>' +
+        '<div class="stage-note">Preview only - <b>' + escHtml(product) + '</b> is not connected to a backend yet, so staged templates are not saved or versioned.</div>' +
+      '</div>';
+
+    const input = panel.querySelector('.stage-input');
+    const stageBtn = panel.querySelector('.stage-btn');
+    const fileOut = panel.querySelector('.stage-file');
+
+    function collapse() {
+      btn.setAttribute('aria-expanded', 'false');
+      panel.hidden = true;
+    }
+    function expand() {
+      // accordion: only one roadmap product open at a time
+      groups.forEach(function(g) {
+        if (g === group) return;
+        const b = g.querySelector('.prod.roadmap');
+        const p = g.querySelector('.prod-panel');
+        if (b) b.setAttribute('aria-expanded', 'false');
+        if (p) p.hidden = true;
+      });
+      btn.setAttribute('aria-expanded', 'true');
+      panel.hidden = false;
+    }
+
+    btn.addEventListener('click', function() {
+      if (btn.getAttribute('aria-expanded') === 'true') collapse();
+      else expand();
+    });
+
+    stageBtn.addEventListener('click', function() { input.click(); });
+
+    input.addEventListener('change', function() {
+      const file = input.files && input.files[0];
+      input.value = '';
+      if (!file) return;
+      if (!/\.docx$/i.test(file.name)) {
+        fileOut.innerHTML = '<span style="color:#e79aa2;">Please choose a .docx file.</span>';
+        return;
+      }
+      const kb = Math.max(1, Math.round(file.size / 1024));
+      fileOut.innerHTML =
+        '<span class="fn">' + escHtml(file.name) + '</span>' +
+        '<span style="color:var(--rail-muted);"> · ' + kb + ' KB staged</span>';
+      stageBtn.innerHTML =
+        '<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+          '<path d="M8 10.5V3M8 3L5 6M8 3l3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>' +
+          '<path d="M3 11.5v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>' +
+        '</svg>Replace file';
+    });
+  });
+})();
+</script>
+</body>
+</html>
