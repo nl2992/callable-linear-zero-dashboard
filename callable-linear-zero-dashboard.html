@@ -1979,6 +1979,10 @@ function countCallLinesInParagraph(paragraphXml) {
 function isCallOptionLineParagraph(paragraphXml) {
   return countCallLinesInParagraph(paragraphXml) > 0;
 }
+function paragraphHasCallToken(paragraphXml) {
+  const t = normalizeMatchText(paragraphXml);
+  return t.includes('<<red_amt trade date +') || t.includes('<<trade date +');
+}
 function getParagraphOpenTag(paragraphXml) {
   const m = String(paragraphXml || '').match(/^<w:p\b[^>]*>/);
   return m ? m[0] : '<w:p>';
@@ -2076,7 +2080,7 @@ function findCallOptionSections(paragraphs) {
       i = j;
       continue;
     }
-    if (countCallLinesInParagraph(paragraphs[j].text) > 1) {
+    if (countCallLinesInParagraph(paragraphs[j].text) > 1 && paragraphHasCallToken(paragraphs[j].text)) {
       sections.push({
         start:paragraphs[j].index,
         end:paragraphs[j].end,
@@ -2086,6 +2090,17 @@ function findCallOptionSections(paragraphs) {
       i = j + 1;
       continue;
     }
+    if (!isCallOptionLineParagraph(paragraphs[j].text) || !paragraphHasCallToken(paragraphs[j].text)) {
+      // The paragraph after this heading is not a call-schedule line (or is a
+      // fully-resolved illustrative line with no template tokens), so this is
+      // not a real schedule anchor - it is a narrative/illustrative sentence
+      // that merely mentions "Redemption Amount (Call Option)" (e.g. the
+      // "Early Redemption - Issuer Call Option" paragraph on the summary
+      // page). Skip it so we do not append a spurious call schedule onto the
+      // following paragraph.
+      i = j;
+      continue;
+    }
     const baseParagraphs = [paragraphs[j].text];
     let endPos = paragraphs[j].end;
     let k = j + 1;
@@ -2093,6 +2108,7 @@ function findCallOptionSections(paragraphs) {
       if (isStopHeadingParagraph(paragraphs[k].text)) break;
       if (isBlankParagraph(paragraphs[k].text)) break;
       if (!isCallOptionLineParagraph(paragraphs[k].text)) break;
+      if (!paragraphHasCallToken(paragraphs[k].text)) break;
       baseParagraphs.push(paragraphs[k].text);
       endPos = paragraphs[k].end;
       k += 1;
