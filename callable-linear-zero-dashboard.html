@@ -1164,7 +1164,6 @@ tr.current:hover td { background:#fff4f4; }
                 <div class="actions">
                   <button id="reloadActiveBtn" class="btn" type="button">Reload active template</button>
                   <button id="downloadDocxBtn" class="btn primary" type="button">Download populated DOCX</button>
-                  <button id="exportPdfBtn" class="btn" type="button">Export PDF</button>
                   <button id="resetBtn" class="btn" type="button">Reset values</button>
                 </div>
               </div>
@@ -1214,7 +1213,6 @@ tr.current:hover td { background:#fff4f4; }
 <script src="https://unpkg.com/docxtemplater@latest/build/docxtemplater.js"></script>
 <script src="https://unpkg.com/jszip@latest/dist/jszip.min.js"></script>
 <script src="https://unpkg.com/mammoth@latest/mammoth.browser.min.js"></script>
-<script src="https://unpkg.com/html2pdf.js@latest/dist/html2pdf.bundle.min.js"></script>
 <script>
 (function() {
 const DB_SQL_URL = '/studio/api/database/workspace/sql';
@@ -1277,7 +1275,6 @@ const el = {
   derivedWrap:document.getElementById('derivedWrap'),
   reloadActiveBtn:document.getElementById('reloadActiveBtn'),
   downloadDocxBtn:document.getElementById('downloadDocxBtn'),
-  exportPdfBtn:document.getElementById('exportPdfBtn'),
   resetBtn:document.getElementById('resetBtn'),
   previewHost:document.getElementById('previewHost'),
   previewState:document.getElementById('previewState'),
@@ -2493,75 +2490,6 @@ async function downloadPopulatedDocx() {
     setStatus('Could not generate populated DOCX.<br><br><span class="mono">' + esc(err.message || String(err)) + '</span>', 'err');
   }
 }
-function buildPdfNode() {
-  const wrap = document.createElement('div');
-  wrap.style.background = '#fff';
-  wrap.style.width = '794px';
-  wrap.style.padding = '24px 28px 30px';
-  wrap.innerHTML = `
-<div style="font-family:Arial,sans-serif;color:#111;">
-  <div style="border-bottom:2px solid #db0011;padding-bottom:10px;margin-bottom:16px;">
-    <div style="font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#db0011;font-weight:700;">HSBC Structured Products</div>
-    <div style="font-size:22px;font-weight:700;line-height:1.2;margin-top:4px;">Callable Linear Zero preview</div>
-    <div style="font-size:12px;color:#667085;margin-top:6px;">Generated from the active backend template.</div>
-  </div>
-  <div style="margin-bottom:16px;">${el.summaryGrid.innerHTML}</div>
-  <div id="pdfPreviewContent">${el.previewHost.innerHTML}</div>
-</div>`;
-  const style = document.createElement('style');
-  style.textContent = `
-#pdfPreviewContent, #pdfPreviewContent *{font-family:Arial,sans-serif;box-sizing:border-box}
-#pdfPreviewContent img{max-width:100%;height:auto;display:block}
-#pdfPreviewContent table{border-collapse:collapse;width:100%;table-layout:fixed;margin:12px 0}
-#pdfPreviewContent td,#pdfPreviewContent th{border:1px solid #d9dde5;padding:7px 8px;vertical-align:top;word-break:break-word}
-#pdfPreviewContent p{line-height:1.6;margin:.55em 0}
-#pdfPreviewContent ul,#pdfPreviewContent ol{padding-left:22px}
-.inline-edit{border-bottom:2px solid #db0011;padding:1px 4px;background:#fff7f8;color:#7a0010;font-weight:700}
-.inline-banner{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 12px;border:1px solid #f3d3d8;background:#fff8f8;border-radius:8px;margin-bottom:14px}
-`;
-  wrap.prepend(style);
-  return wrap;
-}
-async function exportPdf() {
-  if (!state.currentTemplateFile) {
-    setStatus('No active template available for PDF export.', 'err');
-    return;
-  }
-  if (!window.html2pdf) {
-    setStatus('PDF export library did not load.', 'err');
-    return;
-  }
-  let pdfHost = null;
-  try {
-    setStatus('Exporting PDF...', 'ok');
-    const pdfNode = buildPdfNode();
-    // html2canvas cannot measure an off-flow (fixed/absolute) node - it clones the
-    // node and reads its layout height, which comes back as 0 once the node itself
-    // is taken out of normal flow. Keep pdfNode static and hide it via a clipped
-    // zero-size outer host instead, so html2canvas sees a normally laid out node.
-    pdfHost = document.createElement('div');
-    pdfHost.style.cssText = 'position:fixed;left:0;top:0;width:0;height:0;overflow:hidden;opacity:0;pointer-events:none;z-index:-1;';
-    pdfHost.appendChild(pdfNode);
-    document.body.appendChild(pdfHost);
-    const base = (state.currentTemplateRow &&
-      (state.currentTemplateRow.template_file_name || state.currentTemplateRow.template_name) || 'template').replace(/\.docx$/i, '');
-    const filename = base + '_preview.pdf';
-    const opt = {
-      margin:[8,8,10,8],
-      filename:filename,
-      image:{ type:'jpeg', quality:0.98 },
-      html2canvas:{ scale:2, useCORS:true, backgroundColor:'#ffffff' },
-      jsPDF:{ unit:'mm', format:'a4', orientation:'portrait' },
-      pagebreak:{ mode:['css', 'legacy'] }
-    };
-    await window.html2pdf().set(opt).from(pdfNode).save();
-    pdfHost.remove();
-    setStatus('PDF export started.', 'ok');
-  } catch (err) {
-    if (pdfHost) pdfHost.remove();
-    setStatus('Could not export PDF.<br><br><span class="mono">' + esc(err.message || String(err)) + '</span>', 'err');
-  }
-}
 function resetValues() {
   state.values = Object.assign({}, defaultValues);
   saveDraft();
@@ -2633,7 +2561,6 @@ function wire() {
     }
   });
   el.downloadDocxBtn.addEventListener('click', downloadPopulatedDocx);
-  el.exportPdfBtn.addEventListener('click', exportPdf);
   el.resetBtn.addEventListener('click', resetValues);
 }
 async function init() {
